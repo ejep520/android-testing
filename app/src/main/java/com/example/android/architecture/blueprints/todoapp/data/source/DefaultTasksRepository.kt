@@ -16,14 +16,17 @@
 package com.example.android.architecture.blueprints.todoapp.data.source
 
 import android.app.Application
+
 import androidx.lifecycle.LiveData
 import androidx.room.Room
+
 import com.example.android.architecture.blueprints.todoapp.data.Result
 import com.example.android.architecture.blueprints.todoapp.data.Result.Success
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksLocalDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.local.ToDoDatabase
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TasksRemoteDataSource
+
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -33,11 +36,11 @@ import kotlinx.coroutines.withContext
 /**
  * Concrete implementation to load tasks from the data sources into a cache.
  */
-class DefaultTasksRepository private constructor(application: Application) {
+class DefaultTasksRepository(
 
-    private val tasksRemoteDataSource: TasksDataSource
-    private val tasksLocalDataSource: TasksDataSource
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val tasksRemoteDataSource: TasksDataSource,
+    private val tasksLocalDataSource: TasksDataSource,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) {
 
     companion object {
         @Volatile
@@ -45,20 +48,19 @@ class DefaultTasksRepository private constructor(application: Application) {
 
         fun getRepository(app: Application): DefaultTasksRepository {
             return INSTANCE ?: synchronized(this) {
-                DefaultTasksRepository(app).also {
-                    INSTANCE = it
+                val database = Room.databaseBuilder(app,
+                ToDoDatabase::class.java,
+                "Tasks.db")
+                    .build()
+                DefaultTasksRepository(
+                    TasksRemoteDataSource,
+                    TasksLocalDataSource(
+                        database.taskDao()
+                    )).also {
+                        INSTANCE = it
                 }
             }
         }
-    }
-
-    init {
-        val database = Room.databaseBuilder(application.applicationContext,
-            ToDoDatabase::class.java, "Tasks.db")
-            .build()
-
-        tasksRemoteDataSource = TasksRemoteDataSource
-        tasksLocalDataSource = TasksLocalDataSource(database.taskDao())
     }
 
     suspend fun getTasks(forceUpdate: Boolean = false): Result<List<Task>> {

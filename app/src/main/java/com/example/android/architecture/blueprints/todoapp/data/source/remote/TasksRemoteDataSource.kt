@@ -15,14 +15,17 @@
  */
 package com.example.android.architecture.blueprints.todoapp.data.source.remote
 
+import androidx.annotation.NonNull
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
+
 import com.example.android.architecture.blueprints.todoapp.data.Result
 import com.example.android.architecture.blueprints.todoapp.data.Result.Error
 import com.example.android.architecture.blueprints.todoapp.data.Result.Success
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
+
 import kotlinx.coroutines.delay
 
 /**
@@ -42,7 +45,8 @@ object TasksRemoteDataSource : TasksDataSource {
     private val observableTasks = MutableLiveData<Result<List<Task>>>()
 
     override suspend fun refreshTasks() {
-        observableTasks.value = getTasks()
+        @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
+        observableTasks.value = getTasks()!!
     }
 
     override suspend fun refreshTask(taskId: String) {
@@ -63,10 +67,12 @@ object TasksRemoteDataSource : TasksDataSource {
                         ?: return@map Error(Exception("Not found"))
                     Success(task)
                 }
+                else -> Error(Exception("Uncaught error"))
             }
         }
     }
 
+    @NonNull
     override suspend fun getTasks(): Result<List<Task>> {
         // Simulate network by delaying the execution.
         val tasks = TASKS_SERVICE_DATA.values.toList()
