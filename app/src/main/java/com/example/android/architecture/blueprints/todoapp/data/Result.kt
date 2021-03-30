@@ -33,7 +33,6 @@ sealed class Result<out R> {
             is Success<*> -> "Success[data=$data]"
             is Error -> "Error[exception=$exception]"
             is Loading -> "Loading"
-            else -> "Error[Uncaught Exception]"
         }
     }
 }
