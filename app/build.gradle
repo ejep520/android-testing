@@ -33,6 +33,8 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     packagingOptions {
+        exclude "**/attach_hotspot_windows.dll"
+        exclude "META-INF/licenses/**"
         exclude 'META-INF/AL2.0'
         exclude 'META-INF/LGPL2.1'
         jniLibs {
@@ -80,6 +82,9 @@ dependencies {
     debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.test:core-ktx:$androidXTestCoreVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
 
 
     // Kotlin

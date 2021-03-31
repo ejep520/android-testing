@@ -67,6 +67,7 @@ class TaskDetailFragmentTest {
     fun completedTaskDetails_DisplayedInUi() = runBlockingTest {
         // Given - Add completed task to the DB
         val completedTitle = "Completed Task"
+        @Suppress("SpellCheckingInspection")
         val completedDescription = "This task is all done. Done done donesky. Yup!"
         val completedTask = Task(completedTitle, completedDescription, true)
         tasksRepository.saveTask(completedTask)
